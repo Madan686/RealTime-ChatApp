@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chat App</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="container">
+
+        <!-- Room Access Card -->
+        <div class="join-card" id="joinCard">
+            <div class="top-bar">
+                <div>
+                    <h1>Chat Rooms</h1>
+                    <p id="loggedInUser"></p>
+                </div>
+
+                <button id="themeToggleBtn" class="theme-toggle-btn" type="button">
+                    Toggle Theme
+                </button>
+            </div>
+
+            <div class="room-sections">
+                <div class="room-box">
+                    <h3>Create Room</h3>
+                    <input type="text" id="createRoomId" placeholder="Room ID" />
+                    <input type="text" id="createRoomName" placeholder="Room Name" />
+                    <input type="password" id="createRoomPassword" placeholder="Room Password" />
+                    <button id="createRoomBtn" type="button">Create Room</button>
+                </div>
+
+                <div class="room-box">
+                    <h3>Join Room</h3>
+                    <input type="text" id="joinRoomId" placeholder="Room ID" />
+                    <input type="password" id="joinRoomPassword" placeholder="Room Password" />
+                    <button id="joinRoomBtn" type="button">Join Room</button>
+                </div>
+            </div>
+
+            <p id="roomMessage" class="auth-message"></p>
+
+            <button id="logoutBtn" class="secondary-btn" type="button">Logout</button>
+        </div>
+
+        <!-- Chat Card -->
+        <div class="chat-card hidden" id="chatCard">
+            <div class="chat-header">
+                <div>
+                    <h2 id="roomTitle">Room</h2>
+                    <p id="userLabel"></p>
+                </div>
+
+                <div class="chat-header-actions">
+                    <button id="chatThemeToggleBtn" class="theme-toggle-btn" type="button">Toggle Theme</button>
+                    <button id="leaveBtn" type="button">Leave</button>
+                </div>
+            </div>
+
+            <div class="chat-help">
+                Send private message using:
+                <strong>@username your message</strong>
+            </div>
+
+            <div class="messages" id="messages"></div>
+
+            <div class="chat-input">
+                <input type="text" id="messageInput" placeholder="Type a message..." />
+                <button id="sendBtn" type="button">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

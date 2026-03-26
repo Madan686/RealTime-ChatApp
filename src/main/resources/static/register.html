@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Register - Chat App</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="container">
+        <div class="auth-card">
+            <div class="top-bar">
+                <h1>Register</h1>
+                <button id="themeToggleBtn" class="theme-toggle-btn" type="button">
+                    Toggle Theme
+                </button>
+            </div>
+
+            <div id="registerMessage" class="auth-message"></div>
+
+            <input type="text" id="registerUsername" placeholder="Choose username" />
+            <input type="password" id="registerPassword" placeholder="Choose password" />
+
+            <button id="registerBtn" type="button">Register</button>
+
+            <p class="auth-link">
+                Already have an account?
+                <a href="/login.html">Login</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const registerBtn = document.getElementById("registerBtn");
+        const registerUsername = document.getElementById("registerUsername");
+        const registerPassword = document.getElementById("registerPassword");
+        const registerMessage = document.getElementById("registerMessage");
+        const themeToggleBtn = document.getElementById("themeToggleBtn");
+
+        initializeTheme();
+
+        registerBtn.addEventListener("click", registerUser);
+        themeToggleBtn.addEventListener("click", toggleTheme);
+
+        registerPassword.addEventListener("keypress", function (e) {
+            if (e.key === "Enter") {
+                registerUser();
+            }
+        });
+
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem("theme") || "dark";
+            document.documentElement.setAttribute("data-theme", savedTheme);
+            updateThemeButtonText(savedTheme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute("data-theme") || "dark";
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+
+            document.documentElement.setAttribute("data-theme", newTheme);
+            localStorage.setItem("theme", newTheme);
+            updateThemeButtonText(newTheme);
+        }
+
+        function updateThemeButtonText(theme) {
+            themeToggleBtn.textContent = theme === "dark" ? "Light Mode" : "Dark Mode";
+        }
+
+        async function registerUser() {
+            const username = registerUsername.value.trim();
+            const password = registerPassword.value.trim();
+
+            if (!username || !password) {
+                registerMessage.textContent = "Please enter username and password.";
+                return;
+            }
+
+            if (password.length < 6) {
+                registerMessage.textContent = "Password must be at least 6 characters.";
+                return;
+            }
+
+            try {
+                const response = await fetch("/api/auth/signup", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        username,
+                        password
+                    })
+                });
+
+                let data = null;
+                try {
+                    data = await response.json();
+                } catch (e) {
+                    data = null;
+                }
+
+                if (!response.ok) {
+                    registerMessage.textContent = typeof data === "string"
+                        ? data
+                        : "Registration failed.";
+                    return;
+                }
+
+                localStorage.setItem("token", data.token);
+                localStorage.setItem("username", data.username);
+
+                window.location.href = "/index.html";
+            } catch (error) {
+                console.error("Register error:", error);
+                registerMessage.textContent = "Registration failed. Please try again.";
+            }
+        }
+    </script>
+</body>
+</html>

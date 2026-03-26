@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login - Chat App</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="container">
+        <div class="auth-card">
+            <div class="top-bar">
+                <h1>Login</h1>
+                <button id="themeToggleBtn" class="theme-toggle-btn" type="button">
+                    Toggle Theme
+                </button>
+            </div>
+
+            <div id="loginMessage" class="auth-message"></div>
+
+            <input type="text" id="loginUsername" placeholder="Enter username" />
+            <input type="password" id="loginPassword" placeholder="Enter password" />
+
+            <button id="loginBtn" type="button">Login</button>
+
+            <p class="auth-link">
+                Don't have an account?
+                <a href="/register.html">Register</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const loginBtn = document.getElementById("loginBtn");
+        const loginUsername = document.getElementById("loginUsername");
+        const loginPassword = document.getElementById("loginPassword");
+        const loginMessage = document.getElementById("loginMessage");
+        const themeToggleBtn = document.getElementById("themeToggleBtn");
+
+        initializeTheme();
+
+        loginBtn.addEventListener("click", loginUser);
+        themeToggleBtn.addEventListener("click", toggleTheme);
+
+        loginPassword.addEventListener("keypress", function (e) {
+            if (e.key === "Enter") {
+                loginUser();
+            }
+        });
+
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem("theme") || "dark";
+            document.documentElement.setAttribute("data-theme", savedTheme);
+            updateThemeButtonText(savedTheme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute("data-theme") || "dark";
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+
+            document.documentElement.setAttribute("data-theme", newTheme);
+            localStorage.setItem("theme", newTheme);
+            updateThemeButtonText(newTheme);
+        }
+
+        function updateThemeButtonText(theme) {
+            themeToggleBtn.textContent = theme === "dark" ? "Light Mode" : "Dark Mode";
+        }
+
+        async function loginUser() {
+            const username = loginUsername.value.trim();
+            const password = loginPassword.value.trim();
+
+            if (!username || !password) {
+                loginMessage.textContent = "Please enter username and password.";
+                return;
+            }
+
+            try {
+                const response = await fetch("/api/auth/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        username,
+                        password
+                    })
+                });
+
+                let data = null;
+                try {
+                    data = await response.json();
+                } catch (e) {
+                    data = null;
+                }
+
+                if (!response.ok) {
+                    loginMessage.textContent = "Invalid username or password.";
+                    return;
+                }
+
+                localStorage.setItem("token", data.token);
+                localStorage.setItem("username", data.username);
+
+                window.location.href = "/index.html";
+            } catch (error) {
+                console.error("Login error:", error);
+                loginMessage.textContent = "Login failed. Please try again.";
+            }
+        }
+    </script>
+</body>
+</html>
