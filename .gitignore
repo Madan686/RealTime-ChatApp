@@ -1,7 +1,13 @@
-target/
+# MongoDB local data
+data/
+db/
+*.wt
+journal/
+
+# OS / IDE
 node_modules/
+target/
 .env
 *.log
-.DS_Store
-.idea/
 .vscode/
+.idea/
